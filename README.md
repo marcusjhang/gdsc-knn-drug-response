@@ -171,7 +171,7 @@ The choice is very stable. The follow-up analyses below use
 
 * **Baseline matters most**, especially for drug KNN. Using raw AUC (no baseline) pushes drug KNN from 0.068 to 0.10.
 * **Cosine vs Pearson makes no difference.** After subtracting the baseline, each cell line's residuals already average close to zero, so the two formulas nearly coincide.
-* **Shrinkage helps only slightly** (0.0656 → 0.0654 for cell-line KNN). Most pairs of cell lines share over 150 drugs, so few similarities rest on thin evidence.
+* **Shrinkage helps only slightly** (cell-line KNN: 0.0663 at λ = 0 → 0.0660 at λ = 100). 94% of cell-line pairs share more than 150 drugs, so few similarities rest on thin evidence.
 
 ### Does it hold up when more data is hidden?
 
@@ -203,27 +203,31 @@ KNN degrades gracefully. With 60% of the measured values hidden, it still beats 
 | 0.95–1 | 11,380 | 0.037 | 0.058 |
 
 **Predictions shrink toward the average.** Very sensitive cases (true AUC < 0.5) are
-predicted too high, which shows as points above the diagonal on the left of the plot.
+predicted too high, by 0.12 on average, which shows as points above the diagonal on the left of the plot.
 KNN still reduces that error by 36% compared with the baseline, but these are the
 cases where most of the remaining error sits.
 
 ![RMSE by coverage](figures/06_rmse_by_cell_line_coverage.png)
 
 Error barely depends on how many drugs a cell line was measured on. Every cell line
-in the test sample had at least 50, and only 2 of the 969 cell lines have fewer
-than 50 measurements in total.
+in the test sample had at least 85 training measurements. Only 2 of the 969 cell
+lines have fewer than 50 in total (HCC202: 14, RH-18: 12), and neither appeared in
+the seed-0 test sample.
 
 The hardest drugs (`results/error_by_drug.csv`) are those whose AUC varies a lot
-between cell lines, for example drug IDs 1248, 1819 and 1617.
+between cell lines, for example drug IDs 1248, 1819 and 1617. Across drugs, KNN
+error and the spread of true AUC correlate at r = 0.93.
 
 ## Things to be aware of
 
 1. **A small RMSE is partly an artefact of the data.** 65% of AUCs are above 0.9, so
    predicting a value near 0.95 is right most of the time. Always quote RMSE next to
    the drug-mean baseline, and preferably next to the AUC < 0.8 RMSE.
-2. **`KNNImputer` looks competitive on overall RMSE (0.0667) but is worst of the KNN
-   variants on sensitive cases (0.129 vs 0.117).** It is good at the easy near-1
-   values and weaker where it matters.
+2. **`KNNImputer` looks competitive on overall RMSE (0.0667), but on the sensitive
+   cases it is clearly worse than tuned KNN (0.129 vs 0.117).** It does better on the
+   easy near-1 values (0.0415 vs 0.0452). The only model worse on sensitive cases is
+   the plain no-baseline KNN (0.135). Working from a baseline is what helps the cases
+   that matter.
 3. **Random masking is the easy setting.** A hidden entry's cell line and drug both
    still have plenty of other measurements. Predicting a brand-new cell line or drug
    (cold start) would be much harder, and this experiment does not test it.
@@ -231,8 +235,11 @@ between cell lines, for example drug IDs 1248, 1819 and 1617.
    is fair. However, it was added as an extra and was not part of the validation-based
    selection.
 5. Drug KNN's validation RMSE was still very slightly improving at λ = 800, the top of
-   the grid (0.06687 → 0.06685). The difference is negligible and does not change any
-   conclusion.
+   the grid (0.06785 at λ = 400 → 0.06780 at λ = 800, mean over seeds). The difference
+   is negligible and does not change any conclusion.
+6. "Pearson" here uses the common shortcut: each cell line's values are centred on its
+   own mean over all its measured drugs, not only the drugs it shares with the other
+   cell line. Cosine and Pearson gave the same results anyway.
 
 ## Files
 
