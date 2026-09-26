@@ -1,0 +1,20 @@
+{
+  "n_cell_lines": 969,
+  "n_drugs": 295,
+  "n_observed": 242036,
+  "missing_fraction": 0.15329100418044117,
+  "auc_mean": 0.8825921074096414,
+  "auc_median": 0.9441965,
+  "auc_std": 0.1469981545703795,
+  "auc_min": 0.006282,
+  "auc_max": 0.998904,
+  "frac_auc_below_0.8": 0.18339420582062171,
+  "frac_auc_above_0.9": 0.6482093572856931,
+  "obs_per_cell_line_min": 12,
+  "obs_per_cell_line_median": 279.0,
+  "obs_per_drug_min": 225,
+  "obs_per_drug_median": 893.0,
+  "cell_lines_with_<50_obs": 2,
+  "duplicate_cell_lines": 0,
+  "duplicate_drugs": 0
+}

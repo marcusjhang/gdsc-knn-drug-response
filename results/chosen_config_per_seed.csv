@@ -1,0 +1,6 @@
+seed,kind,similarity,shrinkage,baseline,k,imputer_k
+0,user,pearson,200,bias,15,10
+1,user,pearson,100,bias,15,10
+2,user,cosine,100,bias,15,10
+3,user,pearson,100,bias,15,10
+4,user,cosine,200,bias,15,10
